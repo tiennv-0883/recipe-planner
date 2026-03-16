@@ -11,6 +11,7 @@ import {
 } from 'react'
 import type { Recipe } from '@/src/types'
 import { searchRecipes } from '@/src/services/recipes'
+import { useAuth } from '@/src/context/AuthContext'
 
 // ---- State ----
 
@@ -106,9 +107,11 @@ const RecipeContext = createContext<RecipeContextValue | null>(null)
 
 export function RecipeProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(recipeReducer, initialState)
+  const { user, loading: authLoading } = useAuth()
 
-  // Load from API on mount
+  // Load from API only when user is authenticated
   useEffect(() => {
+    if (authLoading || !user) return
     async function loadRecipes() {
       try {
         const res = await fetch('/api/recipes')
@@ -123,7 +126,7 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       }
     }
     loadRecipes()
-  }, [])
+  }, [user, authLoading])
 
   /**
    * API-backed dispatch.

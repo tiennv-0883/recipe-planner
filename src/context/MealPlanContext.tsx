@@ -10,6 +10,7 @@ import {
   type Dispatch,
 } from 'react'
 import type { MealPlan, MealSlot, DayOfWeek, MealType } from '@/src/types'
+import { useAuth } from '@/src/context/AuthContext'
 import { currentIsoWeek } from '@/src/lib/weekUtils'
 
 // ---- State ----
@@ -104,9 +105,11 @@ const MealPlanContext = createContext<MealPlanContextValue | null>(null)
 
 export function MealPlanProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(mealPlanReducer, initialState)
+  const { user, loading: authLoading } = useAuth()
 
-  // Load the active week's plan from API on mount
+  // Load the active week's plan from API only when user is authenticated
   useEffect(() => {
+    if (authLoading || !user) return
     async function loadActiveWeek() {
       const res = await fetch(`/api/meal-plans/${state.activeWeek}`)
       if (res.ok) {
@@ -121,7 +124,7 @@ export function MealPlanProvider({ children }: { children: React.ReactNode }) {
     }
     loadActiveWeek()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [user, authLoading])
 
   const apiDispatch = useCallback(async (action: MealPlanAction) => {
     switch (action.type) {

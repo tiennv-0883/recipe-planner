@@ -10,6 +10,7 @@ import {
   type Dispatch,
 } from 'react'
 import type { GroceryList, GroceryItem } from '@/src/types'
+import { useAuth } from '@/src/context/AuthContext'
 import { currentIsoWeek } from '@/src/lib/weekUtils'
 
 // ---- State ----
@@ -130,9 +131,11 @@ const GroceryContext = createContext<GroceryContextValue | null>(null)
 
 export function GroceryProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(groceryReducer, initialState)
+  const { user, loading: authLoading } = useAuth()
 
-  // Load active week's grocery list from API on mount
+  // Load active week's grocery list from API only when user is authenticated
   useEffect(() => {
+    if (authLoading || !user) return
     async function loadActiveList() {
       const res = await fetch(`/api/grocery-lists/${state.activeWeek}`)
       if (res.ok) {
@@ -144,7 +147,7 @@ export function GroceryProvider({ children }: { children: React.ReactNode }) {
     }
     loadActiveList()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [user, authLoading])
 
   const apiDispatch = useCallback(async (action: GroceryAction) => {
     switch (action.type) {

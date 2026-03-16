@@ -254,3 +254,11 @@ Task T090: "Fix src/app/recipes/[id]/edit/page.tsx (BUG-001)"
   — Wrapped root layout with `<AuthGuard>` inside `<AuthProvider>`  
   — Hardened `middleware.ts` with try-catch so Supabase errors never silently allow unauthenticated access  
   — Changed `router.push` → `router.replace` in login page, signup page, and `LogoutButton` so back-button cannot return to restricted pages
+
+- [X] BUG-007 `AuthGuard` caused hydration mismatch — server rendered `children` but client rendered a spinner on first paint (`loading=true` on mount)  
+  — Added `mounted` state (set via `useEffect`); renders `children` before mount to match server HTML, then applies auth logic after hydration  
+  — `src/components/AuthGuard.tsx`
+
+- [X] BUG-008 `RecipeContext`, `MealPlanContext`, `GroceryContext` called their APIs immediately on mount — triggered 401 errors on the `/login` page before auth check completed  
+  — Added `useAuth()` to all 3 contexts; gated `useEffect` data fetches on `!authLoading && user` — API calls only fire after a valid session is confirmed  
+  — `src/context/RecipeContext.tsx`, `src/context/MealPlanContext.tsx`, `src/context/GroceryContext.tsx`
