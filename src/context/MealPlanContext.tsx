@@ -35,7 +35,8 @@ const initialState: MealPlanState = {
 type MealPlanAction =
   | { type: 'LOAD'; payload: Record<string, MealPlan> }
   | { type: 'SET_ACTIVE_WEEK'; payload: string }
-  | { type: 'ASSIGN'; payload: { isoWeek: string; day: DayOfWeek; mealType: MealType; recipeId: string } }
+  | { type: 'ADD_RECIPE'; payload: { isoWeek: string; day: DayOfWeek; mealType: MealType; recipeId: string } }
+  | { type: 'REMOVE_RECIPE'; payload: { isoWeek: string; slotId: string; recipeId: string } }
   | { type: 'CLEAR_SLOT'; payload: { isoWeek: string; day: DayOfWeek; mealType: MealType } }
   | { type: 'CLEAR_WEEK'; payload: string }
 
@@ -50,16 +51,42 @@ function mealPlanReducer(state: MealPlanState, action: MealPlanAction): MealPlan
     case 'SET_ACTIVE_WEEK':
       return { ...state, activeWeek: action.payload }
 
-    case 'ASSIGN': {
+    case 'ADD_RECIPE': {
       const { isoWeek, day, mealType, recipeId } = action.payload
       const plan = state.plans[isoWeek] ?? makeEmptyPlan(isoWeek)
-      const newSlot: MealSlot = { id: `${isoWeek}-${day}-${mealType}`, day, mealType, recipeId }
-      const slots = plan.slots.filter(
+      const existing = plan.slots.find((s) => s.day === day && s.mealType === mealType)
+      const currentIds = existing?.recipeIds ?? []
+      const updatedSlot: MealSlot = {
+        id: existing?.id ?? `${isoWeek}-${day}-${mealType}`,
+        day,
+        mealType,
+        recipeIds: [...currentIds, recipeId],
+      }
+      const otherSlots = plan.slots.filter(
         (s) => !(s.day === day && s.mealType === mealType),
       )
       const updatedPlan: MealPlan = {
         ...plan,
-        slots: [...slots, newSlot],
+        slots: [...otherSlots, updatedSlot],
+        updatedAt: new Date().toISOString(),
+      }
+      return { ...state, plans: { ...state.plans, [isoWeek]: updatedPlan } }
+    }
+
+    case 'REMOVE_RECIPE': {
+      const { isoWeek, slotId, recipeId } = action.payload
+      const plan = state.plans[isoWeek]
+      if (!plan) return state
+      const slot = plan.slots.find((s) => s.id === slotId)
+      if (!slot) return state
+      const newRecipeIds = slot.recipeIds.filter((id) => id !== recipeId)
+      const otherSlots = plan.slots.filter((s) => s.id !== slotId)
+      const updatedPlan: MealPlan = {
+        ...plan,
+        slots:
+          newRecipeIds.length === 0
+            ? otherSlots
+            : [...otherSlots, { ...slot, recipeIds: newRecipeIds }],
         updatedAt: new Date().toISOString(),
       }
       return { ...state, plans: { ...state.plans, [isoWeek]: updatedPlan } }
@@ -95,7 +122,7 @@ function mealPlanReducer(state: MealPlanState, action: MealPlanAction): MealPlan
 interface MealPlanContextValue {
   state: MealPlanState
   dispatch: Dispatch<MealPlanAction>
-  /** API-backed dispatch for ASSIGN, CLEAR_SLOT, CLEAR_WEEK */
+  /** API-backed dispatch for ADD_RECIPE, REMOVE_RECIPE, CLEAR_SLOT, CLEAR_WEEK */
   apiDispatch: (action: MealPlanAction) => Promise<void>
   /** Active week's meal plan (always defined) */
   activePlan: MealPlan
@@ -139,7 +166,7 @@ export function MealPlanProvider({ children }: { children: React.ReactNode }) {
         }
         return
       }
-      case 'ASSIGN': {
+      case 'ADD_RECIPE': {
         const { isoWeek, day, mealType, recipeId } = action.payload
         const res = await fetch(`/api/meal-plans/${isoWeek}/slots`, {
           method: 'POST',
@@ -150,6 +177,26 @@ export function MealPlanProvider({ children }: { children: React.ReactNode }) {
           const data = await res.json()
           if (data.mealPlan) {
             dispatch({ type: 'LOAD', payload: { [isoWeek]: data.mealPlan } })
+          }
+        }
+        return
+      }
+      case 'REMOVE_RECIPE': {
+        const { isoWeek, slotId, recipeId } = action.payload
+        // Optimistic update
+        dispatch(action)
+        const res = await fetch(
+          `/api/meal-plans/${isoWeek}/slots/${slotId}/recipes/${recipeId}`,
+          { method: 'DELETE' },
+        )
+        if (!res.ok) {
+          // Revert: reload the week's plan from API
+          const reload = await fetch(`/api/meal-plans/${isoWeek}`)
+          if (reload.ok) {
+            const data = await reload.json()
+            if (data.mealPlan) {
+              dispatch({ type: 'LOAD', payload: { [isoWeek]: data.mealPlan } })
+            }
           }
         }
         return

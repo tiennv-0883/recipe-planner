@@ -36,14 +36,14 @@ export default function MealPlannerPage() {
     apiDispatch({ type: 'SET_ACTIVE_WEEK', payload: currentIsoWeek() })
   }
 
-  function handleAssign(day: DayOfWeek, mealType: MealType) {
+  function handleAddRecipe(day: DayOfWeek, mealType: MealType) {
     setPickerTarget({ day, mealType })
   }
 
   function handleSelectRecipe(recipeId: string) {
     if (!pickerTarget) return
     apiDispatch({
-      type: 'ASSIGN',
+      type: 'ADD_RECIPE',
       payload: {
         isoWeek: state.activeWeek,
         day: pickerTarget.day,
@@ -54,14 +54,14 @@ export default function MealPlannerPage() {
     setPickerTarget(null)
   }
 
-  function handleClear(day: DayOfWeek, mealType: MealType) {
+  function handleRemoveRecipe(slotId: string, recipeId: string) {
     apiDispatch({
-      type: 'CLEAR_SLOT',
-      payload: { isoWeek: state.activeWeek, day, mealType },
+      type: 'REMOVE_RECIPE',
+      payload: { isoWeek: state.activeWeek, slotId, recipeId },
     })
   }
 
-  const filledCount = activePlan.slots.length
+  const filledCount = activePlan.slots.filter((s) => s.recipeIds.length > 0).length
   const totalSlots = 7 * 3 // days × meal types
 
   return (
@@ -90,8 +90,8 @@ export default function MealPlannerPage() {
           <MealGrid
             plan={activePlan}
             recipesById={recipesById}
-            onAssign={handleAssign}
-            onClear={handleClear}
+            onAddRecipe={handleAddRecipe}
+            onRemoveRecipe={handleRemoveRecipe}
           />
         </div>
 

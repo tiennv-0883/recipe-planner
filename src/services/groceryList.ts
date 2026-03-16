@@ -10,10 +10,9 @@ export function generateGroceryList(
   plan: MealPlan,
   recipesById: Record<string, Recipe>,
 ): GroceryList {
-  const allIngredients = plan.slots.flatMap((slot) => {
-    const recipe = recipesById[slot.recipeId]
-    return recipe ? recipe.ingredients : []
-  })
+  const allIngredients = plan.slots.flatMap((slot) =>
+    slot.recipeIds.flatMap((id) => recipesById[id]?.ingredients ?? [])
+  )
 
   const aggregated = aggregateIngredients(allIngredients)
 

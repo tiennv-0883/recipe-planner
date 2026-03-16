@@ -52,7 +52,15 @@ export interface DbMealSlot {
   meal_plan_id: string
   day: string
   meal_type: string
+  /** Deprecated — use meal_slot_recipes join instead. Nullable after migration 003. */
+  recipe_id: string | null
+}
+
+export interface DbMealSlotRecipe {
+  id: string
+  slot_id: string
   recipe_id: string
+  position: number
 }
 
 export interface DbGroceryList {
@@ -80,9 +88,9 @@ export interface DbRecipeWithChildren extends DbRecipe {
   preparation_steps: DbPreparationStep[]
 }
 
-/** Full meal plan joined with slots */
+/** Full meal plan joined with slots and their recipe junction rows */
 export interface DbMealPlanWithSlots extends DbMealPlan {
-  meal_slots: DbMealSlot[]
+  meal_slots: (DbMealSlot & { meal_slot_recipes: DbMealSlotRecipe[] })[]
 }
 
 /** Full grocery list joined with items */

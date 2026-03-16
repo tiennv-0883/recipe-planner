@@ -62,7 +62,8 @@ export interface MealSlot {
   id: string
   day: DayOfWeek
   mealType: MealType
-  recipeId: string
+  /** Ordered list of recipe IDs (0–3 entries). */
+  recipeIds: string[]
 }
 
 export interface MealPlan {

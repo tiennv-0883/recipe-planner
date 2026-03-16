@@ -3,6 +3,7 @@ import type {
   DbIngredientLine,
   DbMealPlanWithSlots,
   DbMealSlot,
+  DbMealSlotRecipe,
   DbPreparationStep,
   DbRecipeWithChildren,
 } from '@/src/lib/supabase/types'
@@ -108,12 +109,16 @@ export function toDbPreparationStepInsert(
 //  Meal Plan mappers
 // ─────────────────────────────────────────────────
 
-function toDomainMealSlot(db: DbMealSlot): MealSlot {
+function toDomainMealSlot(
+  db: DbMealSlot & { meal_slot_recipes?: DbMealSlotRecipe[] },
+): MealSlot {
   return {
     id: db.id,
     day: db.day as MealSlot['day'],
     mealType: db.meal_type as MealType,
-    recipeId: db.recipe_id,
+    recipeIds: (db.meal_slot_recipes ?? [])
+      .sort((a, b) => a.position - b.position)
+      .map((r) => r.recipe_id),
   }
 }
 

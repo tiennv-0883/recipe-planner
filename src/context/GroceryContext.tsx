@@ -13,6 +13,9 @@ import type { GroceryList, GroceryItem } from '@/src/types'
 import { useAuth } from '@/src/context/AuthContext'
 import { currentIsoWeek } from '@/src/lib/weekUtils'
 
+// generateGroceryList handles all slot.recipeIds iteration — no direct recipeId access here
+// (generation is delegated to /api/grocery-lists/[week]/generate which calls the service)
+
 // ---- State ----
 
 interface GroceryState {

@@ -16,7 +16,7 @@ const SIMPLE_PLAN: MealPlan = {
   isoWeek: '2026-W11',
   updatedAt: '2026-01-01T00:00:00Z',
   slots: [
-    { id: 's1', day: 'monday', mealType: 'lunch', recipeId: 'r-001' }, // Tomato Basil Pasta
+    { id: 's1', day: 'monday', mealType: 'lunch', recipeIds: ['r-001'] }, // Tomato Basil Pasta
   ],
 }
 
@@ -54,8 +54,8 @@ describe('groceryListService', () => {
         isoWeek: '2026-W11',
         updatedAt: '',
         slots: [
-          { id: 's1', day: 'monday', mealType: 'lunch', recipeId: 'r-001' },
-          { id: 's2', day: 'monday', mealType: 'dinner', recipeId: 'r-001' },
+          { id: 's1', day: 'monday', mealType: 'lunch', recipeIds: ['r-001'] },
+          { id: 's2', day: 'monday', mealType: 'dinner', recipeIds: ['r-001'] },
         ],
       }
       const list = generateGroceryList(planWithTwoSlots, recipesById)
@@ -69,6 +69,51 @@ describe('groceryListService', () => {
       const emptyPlan: MealPlan = { isoWeek: '2026-W11', slots: [], updatedAt: '' }
       const list = generateGroceryList(emptyPlan, recipesById)
       expect(list.items).toHaveLength(0)
+    })
+
+    it('produces no ingredients from a slot with empty recipeIds', () => {
+      const planWithEmptySlot: MealPlan = {
+        isoWeek: '2026-W11',
+        updatedAt: '',
+        slots: [{ id: 's1', day: 'monday', mealType: 'lunch', recipeIds: [] }],
+      }
+      const list = generateGroceryList(planWithEmptySlot, recipesById)
+      expect(list.items).toHaveLength(0)
+    })
+
+    it('aggregates ingredients from a multi-recipe slot', () => {
+      // r-001 (Tomato Basil Pasta) is used twice — same recipe in both slots
+      // aggregateIngredients() will sum quantities of same name+unit combos
+      const planWithTwoRecipes: MealPlan = {
+        isoWeek: '2026-W11',
+        updatedAt: '',
+        slots: [
+          { id: 's1', day: 'monday', mealType: 'lunch', recipeIds: ['r-001', 'r-001'] },
+        ],
+      }
+      const single = generateGroceryList(SIMPLE_PLAN, recipesById)
+      const doubled = generateGroceryList(planWithTwoRecipes, recipesById)
+      // Quantities should be doubled (same recipe applied twice)
+      const singleTotal = single.items.reduce((sum, i) => sum + i.quantity, 0)
+      const doubledTotal = doubled.items.reduce((sum, i) => sum + i.quantity, 0)
+      expect(doubledTotal).toBeCloseTo(singleTotal * 2, 0)
+    })
+
+    it('uses same recipe across two different slots correctly', () => {
+      // Two different slots each referencing r-001 — ingredients should be doubled
+      const planWithTwoSlotsSameRecipe: MealPlan = {
+        isoWeek: '2026-W11',
+        updatedAt: '',
+        slots: [
+          { id: 's1', day: 'monday', mealType: 'lunch', recipeIds: ['r-001'] },
+          { id: 's2', day: 'monday', mealType: 'dinner', recipeIds: ['r-001'] },
+        ],
+      }
+      const single = generateGroceryList(SIMPLE_PLAN, recipesById)
+      const doubled = generateGroceryList(planWithTwoSlotsSameRecipe, recipesById)
+      const singleTotal = single.items.reduce((sum, i) => sum + i.quantity, 0)
+      const doubledTotal = doubled.items.reduce((sum, i) => sum + i.quantity, 0)
+      expect(doubledTotal).toBeCloseTo(singleTotal * 2, 0)
     })
 
     it('assigns categories to items', () => {

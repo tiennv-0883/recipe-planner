@@ -12,7 +12,7 @@ interface WeekAtAGlanceProps {
 }
 
 export default function WeekAtAGlance({ isoWeek, plan, recipesById }: WeekAtAGlanceProps) {
-  const filledCount = plan.slots.length
+  const filledCount = plan.slots.filter((s) => s.recipeIds.length > 0).length
   const totalSlots = 7 * 3
 
   const today = new Date()
@@ -66,20 +66,22 @@ export default function WeekAtAGlance({ isoWeek, plan, recipesById }: WeekAtAGla
                 {day.slice(0, 3)}
               </span>
               <div className="flex gap-1.5 flex-wrap flex-1">
-                {daySlots.length === 0 ? (
+                {daySlots.flatMap((s) => s.recipeIds).length === 0 ? (
                   <span className="text-xs text-gray-300">No meals</span>
                 ) : (
-                  daySlots.map((slot) => {
-                    const recipe = recipesById[slot.recipeId]
-                    return (
-                      <span
-                        key={slot.id}
-                        className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700"
-                      >
-                        {recipe?.title ?? '?'}
-                      </span>
-                    )
-                  })
+                  daySlots.flatMap((slot) =>
+                    slot.recipeIds.map((id) => {
+                      const recipe = recipesById[id]
+                      return (
+                        <span
+                          key={`${slot.id}-${id}`}
+                          className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700"
+                        >
+                          {recipe?.title ?? '?'}
+                        </span>
+                      )
+                    })
+                  )
                 )}
               </div>
             </div>

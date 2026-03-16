@@ -1,6 +1,9 @@
 import {
   getMealPlan,
   assignRecipe,
+  addRecipeToSlot,
+  removeRecipeFromSlot,
+  MAX_RECIPES_PER_SLOT,
   clearSlot,
   getFilledSlots,
   getAssignedRecipeIds,
@@ -32,14 +35,14 @@ describe('mealPlannerService', () => {
     it('adds a slot to an empty plan', () => {
       const result = assignRecipe(EMPTY_PLAN, 'monday', 'lunch', 'r-001')
       expect(result.slots).toHaveLength(1)
-      expect(result.slots[0]).toMatchObject({ day: 'monday', mealType: 'lunch', recipeId: 'r-001' })
+      expect(result.slots[0]).toMatchObject({ day: 'monday', mealType: 'lunch', recipeIds: ['r-001'] })
     })
 
     it('replaces existing slot for same day/mealType', () => {
       const withSlot = assignRecipe(EMPTY_PLAN, 'monday', 'lunch', 'r-001')
       const result = assignRecipe(withSlot, 'monday', 'lunch', 'r-002')
       expect(result.slots).toHaveLength(1)
-      expect(result.slots[0].recipeId).toBe('r-002')
+      expect(result.slots[0].recipeIds[0]).toBe('r-002')
     })
 
     it('does not mutate the original plan', () => {
@@ -51,6 +54,88 @@ describe('mealPlannerService', () => {
       const before = EMPTY_PLAN.updatedAt
       const result = assignRecipe(EMPTY_PLAN, 'tuesday', 'dinner', 'r-003')
       expect(result.updatedAt).not.toBe(before)
+    })
+  })
+
+  describe('addRecipeToSlot', () => {
+    it('creates a new slot with recipeIds when slot does not exist', () => {
+      const result = addRecipeToSlot(EMPTY_PLAN, 'monday', 'lunch', 'r-001')
+      expect(result.slots).toHaveLength(1)
+      expect(result.slots[0].recipeIds).toEqual(['r-001'])
+    })
+
+    it('appends a recipe to an existing slot', () => {
+      const withOne = addRecipeToSlot(EMPTY_PLAN, 'monday', 'lunch', 'r-001')
+      const result = addRecipeToSlot(withOne, 'monday', 'lunch', 'r-002')
+      expect(result.slots).toHaveLength(1)
+      expect(result.slots[0].recipeIds).toHaveLength(2)
+      expect(result.slots[0].recipeIds).toContain('r-001')
+      expect(result.slots[0].recipeIds).toContain('r-002')
+    })
+
+    it(`throws SLOT_FULL when slot already has ${MAX_RECIPES_PER_SLOT} recipes`, () => {
+      let plan = addRecipeToSlot(EMPTY_PLAN, 'monday', 'lunch', 'r-001')
+      plan = addRecipeToSlot(plan, 'monday', 'lunch', 'r-002')
+      plan = addRecipeToSlot(plan, 'monday', 'lunch', 'r-003')
+      expect(() => addRecipeToSlot(plan, 'monday', 'lunch', 'r-004')).toThrow('SLOT_FULL')
+    })
+
+    it('throws RECIPE_ALREADY_IN_SLOT when same recipe added twice', () => {
+      const withOne = addRecipeToSlot(EMPTY_PLAN, 'monday', 'lunch', 'r-001')
+      expect(() => addRecipeToSlot(withOne, 'monday', 'lunch', 'r-001')).toThrow('RECIPE_ALREADY_IN_SLOT')
+    })
+
+    it('does not mutate the original plan', () => {
+      addRecipeToSlot(EMPTY_PLAN, 'monday', 'lunch', 'r-001')
+      expect(EMPTY_PLAN.slots).toHaveLength(0)
+    })
+  })
+
+  describe('removeRecipeFromSlot', () => {
+    it('removes one recipe from a multi-recipe slot', () => {
+      let plan = addRecipeToSlot(EMPTY_PLAN, 'monday', 'lunch', 'r-001')
+      plan = addRecipeToSlot(plan, 'monday', 'lunch', 'r-002')
+      const result = removeRecipeFromSlot(plan, 'monday', 'lunch', 'r-002')
+      expect(result.slots).toHaveLength(1)
+      expect(result.slots[0].recipeIds).toEqual(['r-001'])
+    })
+
+    it('removes the slot entirely when the last recipe is removed', () => {
+      const withOne = addRecipeToSlot(EMPTY_PLAN, 'monday', 'lunch', 'r-001')
+      const result = removeRecipeFromSlot(withOne, 'monday', 'lunch', 'r-001')
+      expect(result.slots).toHaveLength(0)
+    })
+
+    it('does not affect other slots', () => {
+      let plan = addRecipeToSlot(EMPTY_PLAN, 'monday', 'lunch', 'r-001')
+      plan = addRecipeToSlot(plan, 'tuesday', 'dinner', 'r-002')
+      const result = removeRecipeFromSlot(plan, 'monday', 'lunch', 'r-001')
+      expect(result.slots).toHaveLength(1)
+      expect(result.slots[0].day).toBe('tuesday')
+    })
+
+    it('is a no-op if slot does not exist', () => {
+      const result = removeRecipeFromSlot(EMPTY_PLAN, 'monday', 'lunch', 'r-001')
+      expect(result.slots).toHaveLength(0)
+    })
+  })
+
+  describe('MAX_RECIPES_PER_SLOT', () => {
+    it('is 3', () => {
+      expect(MAX_RECIPES_PER_SLOT).toBe(3)
+    })
+  })
+
+  describe('getAssignedRecipeIds (multi-recipe)', () => {
+    it('returns all recipe ids from multi-recipe slots', () => {
+      let plan = addRecipeToSlot(EMPTY_PLAN, 'monday', 'lunch', 'r-001')
+      plan = addRecipeToSlot(plan, 'tuesday', 'dinner', 'r-002')
+      plan = addRecipeToSlot(plan, 'tuesday', 'dinner', 'r-003')
+      const ids = getAssignedRecipeIds(plan)
+      expect(ids).toHaveLength(3)
+      expect(ids).toContain('r-001')
+      expect(ids).toContain('r-002')
+      expect(ids).toContain('r-003')
     })
   })
 
@@ -104,7 +189,7 @@ describe('mealPlannerService', () => {
       const plan = assignRecipe(EMPTY_PLAN, 'monday', 'lunch', 'r-001')
       const slot = getSlot(plan, 'monday', 'lunch')
       expect(slot).toBeDefined()
-      expect(slot!.recipeId).toBe('r-001')
+      expect(slot!.recipeIds[0]).toBe('r-001')
     })
 
     it('returns undefined if slot not found', () => {

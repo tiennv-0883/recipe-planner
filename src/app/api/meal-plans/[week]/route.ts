@@ -24,7 +24,7 @@ export async function GET(_req: NextRequest, { params }: RouteParams) {
 
   const { data, error } = await supabase
     .from('meal_plans')
-    .select('*, meal_slots(*)')
+    .select('*, meal_slots(*, meal_slot_recipes(*))')
     .eq('user_id', user.id)
     .eq('iso_week', week)
     .maybeSingle()

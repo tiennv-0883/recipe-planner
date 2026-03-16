@@ -59,24 +59,54 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     plan = newPlan
   }
 
-  // Upsert the slot (delete old one for same day+mealType, insert new)
-  await supabase
+  // Find or create the meal_slots row for this (day, mealType) — no delete/replace
+  let { data: slot } = await supabase
     .from('meal_slots')
-    .delete()
+    .select('id')
     .eq('meal_plan_id', plan.id)
     .eq('day', day)
     .eq('meal_type', mealType)
+    .maybeSingle()
 
-  // Let Supabase generate the UUID via gen_random_uuid()
-  const { error: slotErr } = await supabase.from('meal_slots').insert({
-    meal_plan_id: plan.id,
-    day,
-    meal_type: mealType,
-    recipe_id: recipeId,
-  })
+  if (!slot) {
+    const { data: newSlot, error: slotErr } = await supabase
+      .from('meal_slots')
+      .insert({ meal_plan_id: plan.id, day, meal_type: mealType })
+      .select('id')
+      .single()
 
-  if (slotErr)
-    return NextResponse.json({ error: slotErr.message }, { status: 500 })
+    if (slotErr || !newSlot)
+      return NextResponse.json({ error: slotErr?.message ?? 'Failed to create slot' }, { status: 500 })
+    slot = newSlot
+  }
+
+  // Count existing recipes in this slot
+  const { count: recipeCount } = await supabase
+    .from('meal_slot_recipes')
+    .select('id', { count: 'exact', head: true })
+    .eq('slot_id', slot.id)
+
+  if ((recipeCount ?? 0) >= 3)
+    return NextResponse.json({ error: 'SLOT_FULL' }, { status: 409 })
+
+  // Check for duplicate recipe in this slot
+  const { data: existing } = await supabase
+    .from('meal_slot_recipes')
+    .select('id')
+    .eq('slot_id', slot.id)
+    .eq('recipe_id', recipeId)
+    .maybeSingle()
+
+  if (existing)
+    return NextResponse.json({ error: 'RECIPE_ALREADY_IN_SLOT' }, { status: 409 })
+
+  // Append recipe to junction table
+  const { error: junctionErr } = await supabase
+    .from('meal_slot_recipes')
+    .insert({ slot_id: slot.id, recipe_id: recipeId, position: recipeCount ?? 0 })
+
+  if (junctionErr)
+    return NextResponse.json({ error: junctionErr.message }, { status: 500 })
 
   // Update meal_plans.updated_at
   await supabase
@@ -87,12 +117,12 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
   // Return full updated plan
   const { data: full } = await supabase
     .from('meal_plans')
-    .select('*, meal_slots(*)')
+    .select('*, meal_slots(*, meal_slot_recipes(*))')
     .eq('id', plan.id)
     .single()
 
   return NextResponse.json(
     { mealPlan: full ? toDomainMealPlan(full) : null },
-    { status: 201 },
+    { status: 200 },
   )
 }
