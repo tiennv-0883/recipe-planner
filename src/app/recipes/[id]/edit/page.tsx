@@ -5,12 +5,15 @@ import { useParams, useRouter } from 'next/navigation'
 import MainLayout from '@/src/components/layout/MainLayout'
 import RecipeForm, { type RecipeFormValues } from '@/src/components/recipes/RecipeForm'
 import { useRecipes } from '@/src/context/RecipeContext'
+import { useAuth } from '@/src/context/AuthContext'
 import { getRecipe, updateRecipe } from '@/src/services/recipes'
+import { createSupabaseBrowserClient } from '@/src/lib/supabase/client'
 
 export default function EditRecipePage() {
   const params = useParams()
   const router = useRouter()
   const { state, dispatch } = useRecipes()
+  const { user } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const recipe = getRecipe(state.recipes, params.id as string)
@@ -25,19 +28,43 @@ export default function EditRecipePage() {
     )
   }
 
-  function handleSubmit(values: RecipeFormValues) {
+  async function handleSubmit(values: RecipeFormValues) {
     setIsSubmitting(true)
     try {
+      const { imageFile, ...recipeValues } = values
+
+      // Start with the existing photoUrl; upload will override if a new file was selected
+      let photoUrl = recipeValues.photoUrl
+
+      // Upload new image to Storage (overwrites the previous file via upsert)
+      if (imageFile && user) {
+        const supabase = createSupabaseBrowserClient()
+        const ext = imageFile.name.split('.').pop()?.toLowerCase() ?? 'jpg'
+        const path = `${user.id}/${recipe!.id}.${ext}`
+        const { error: uploadErr } = await supabase.storage
+          .from('recipe-images')
+          .upload(path, imageFile, { upsert: true })
+        if (!uploadErr) {
+          const {
+            data: { publicUrl },
+          } = supabase.storage.from('recipe-images').getPublicUrl(path)
+          photoUrl = publicUrl
+        }
+      }
+
       // Preserve original ingredient IDs where possible, generate new ones otherwise
-      const updatedIngredients = values.ingredients.map((ing, i) => ({
+      const updatedIngredients = recipeValues.ingredients.map((ing, i) => ({
         ...ing,
         id: recipe!.ingredients[i]?.id ?? `ing-${Date.now()}-${i}`,
       }))
+
       const updated = updateRecipe(recipe!, {
-        ...values,
+        ...recipeValues,
+        photoUrl,
         ingredients: updatedIngredients,
-        steps: values.steps.map((step, i) => ({ ...step, order: i + 1 })),
+        steps: recipeValues.steps.map((step, i) => ({ ...step, order: i + 1 })),
       })
+
       dispatch({ type: 'UPDATE', payload: updated })
       router.push(`/recipes/${recipe!.id}`)
     } finally {
@@ -68,3 +95,4 @@ export default function EditRecipePage() {
     </MainLayout>
   )
 }
+

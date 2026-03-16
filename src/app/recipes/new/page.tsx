@@ -4,27 +4,48 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import MainLayout from '@/src/components/layout/MainLayout'
 import RecipeForm, { type RecipeFormValues } from '@/src/components/recipes/RecipeForm'
-import { useRecipeDispatch } from '@/src/context/RecipeContext'
+import { useRecipes } from '@/src/context/RecipeContext'
+import { useAuth } from '@/src/context/AuthContext'
 import { createRecipe } from '@/src/services/recipes'
+import { createSupabaseBrowserClient } from '@/src/lib/supabase/client'
 
 export default function NewRecipePage() {
   const router = useRouter()
-  const dispatch = useRecipeDispatch()
+  const { dispatch } = useRecipes()
+  const { user } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  function handleSubmit(values: RecipeFormValues) {
+  async function handleSubmit(values: RecipeFormValues) {
     setIsSubmitting(true)
     try {
+      const { imageFile, ...recipeValues } = values
+
+      // Build the Recipe entity (generates local id + timestamps)
       const recipe = createRecipe({
-        ...values,
-        // Generate stable IDs for each ingredient
-        ingredients: values.ingredients.map((ing, i) => ({
+        ...recipeValues,
+        ingredients: recipeValues.ingredients.map((ing, i) => ({
           ...ing,
           id: `ing-${Date.now()}-${i}`,
         })),
-        // Convert steps to PreparationStep[]
-        steps: values.steps.map((step, i) => ({ ...step, order: i + 1 })),
+        steps: recipeValues.steps.map((step, i) => ({ ...step, order: i + 1 })),
       })
+
+      // Upload image to Supabase Storage before persisting the recipe
+      if (imageFile && user) {
+        const supabase = createSupabaseBrowserClient()
+        const ext = imageFile.name.split('.').pop()?.toLowerCase() ?? 'jpg'
+        const path = `${user.id}/${recipe.id}.${ext}`
+        const { error: uploadErr } = await supabase.storage
+          .from('recipe-images')
+          .upload(path, imageFile, { upsert: true })
+        if (!uploadErr) {
+          const {
+            data: { publicUrl },
+          } = supabase.storage.from('recipe-images').getPublicUrl(path)
+          recipe.photoUrl = publicUrl
+        }
+      }
+
       dispatch({ type: 'ADD', payload: recipe })
       router.push(`/recipes/${recipe.id}`)
     } finally {
@@ -46,3 +67,4 @@ export default function NewRecipePage() {
     </MainLayout>
   )
 }
+

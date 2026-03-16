@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { clsx } from 'clsx'
 import type { Tag, IngredientLine, PreparationStep } from '@/src/types'
+import ImageUploadInput from '@/src/components/recipes/ImageUploadInput'
+import { validateImageFile } from '@/src/lib/imageValidation'
 
 const ALL_TAGS: Tag[] = ['breakfast', 'lunch', 'dinner', 'healthy', 'vegan', 'vegetarian']
 
@@ -14,6 +16,8 @@ interface RecipeFormValues {
   ingredients: Omit<IngredientLine, 'id'>[]
   steps: Omit<PreparationStep, 'order'>[]
   photoUrl?: string
+  /** The File selected by the user, to be uploaded by the parent page on submit. */
+  imageFile?: File | null
 }
 
 export type { RecipeFormValues }
@@ -52,6 +56,8 @@ export default function RecipeForm({
     initialValues?.steps?.map((s) => s.description) ?? [''],
   )
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imageError, setImageError] = useState('')
 
   function toggleTag(tag: Tag) {
     setTags((prev) =>
@@ -117,6 +123,8 @@ export default function RecipeForm({
         unit: i.unit.trim(),
       })),
       steps: steps.map((s) => ({ description: s.trim() })),
+      photoUrl: initialValues?.photoUrl,
+      imageFile,
     })
   }
 
@@ -128,8 +136,31 @@ export default function RecipeForm({
         : 'border-gray-300 focus:border-brand-500 focus:ring-brand-500',
     )
 
+  function handleFileSelect(file: File | null) {
+    if (!file) {
+      setImageFile(null)
+      setImageError('')
+      return
+    }
+    const result = validateImageFile(file)
+    if (!result.valid) {
+      setImageFile(null)
+      setImageError(result.error)
+    } else {
+      setImageFile(file)
+      setImageError('')
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-6 max-w-2xl">
+      {/* Photo upload */}
+      <ImageUploadInput
+        currentUrl={initialValues?.photoUrl}
+        onFileSelect={handleFileSelect}
+        error={imageError}
+      />
+
       {/* Title */}
       <div>
         <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">

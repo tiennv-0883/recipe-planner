@@ -123,6 +123,7 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
 /**
  * DELETE /api/recipes/[id]
  * Soft-deletes by setting deleted_at.
+ * Also removes the associated Storage object if the photo is hosted in recipe-images.
  */
 export async function DELETE(_req: NextRequest, { params }: RouteParams) {
   const { id } = await params
@@ -132,6 +133,15 @@ export async function DELETE(_req: NextRequest, { params }: RouteParams) {
   } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  // Fetch the recipe first so we can check for a Storage image to clean up
+  const { data: existing } = await supabase
+    .from('recipes')
+    .select('photo_url')
+    .eq('id', id)
+    .eq('user_id', user.id)
+    .is('deleted_at', null)
+    .single()
+
   const { error } = await supabase
     .from('recipes')
     .update({ deleted_at: new Date().toISOString() })
@@ -139,6 +149,16 @@ export async function DELETE(_req: NextRequest, { params }: RouteParams) {
     .eq('user_id', user.id)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  // Remove the Storage object if the image is hosted in our recipe-images bucket
+  // (as opposed to an external URL like Unsplash)
+  if (existing?.photo_url && existing.photo_url.includes('/recipe-images/')) {
+    const match = existing.photo_url.match(/\/recipe-images\/(.+)$/)
+    if (match?.[1]) {
+      // Fire-and-forget — storage cleanup failure should not affect the delete response
+      supabase.storage.from('recipe-images').remove([match[1]]).catch(() => {})
+    }
+  }
 
   return new NextResponse(null, { status: 204 })
 }

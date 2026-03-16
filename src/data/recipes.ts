@@ -4,7 +4,7 @@ export const SEED_RECIPES: Recipe[] = [
   {
     id: 'r-001',
     title: 'Tomato Basil Pasta',
-    photoUrl: '/images/recipes/pasta.jpg',
+    photoUrl: 'https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=800&q=80',
     cookTimeMinutes: 25,
     servings: 2,
     tags: ['dinner', 'vegetarian'],
@@ -26,7 +26,7 @@ export const SEED_RECIPES: Recipe[] = [
   {
     id: 'r-002',
     title: 'Avocado Toast with Eggs',
-    photoUrl: '/images/recipes/avocado-toast.jpg',
+    photoUrl: 'https://images.unsplash.com/photo-1541519227354-08fa5d50c820?w=800&q=80',
     cookTimeMinutes: 10,
     servings: 1,
     tags: ['breakfast', 'healthy', 'vegetarian'],
@@ -49,7 +49,7 @@ export const SEED_RECIPES: Recipe[] = [
   {
     id: 'r-003',
     title: 'Chicken Stir Fry',
-    photoUrl: '/images/recipes/stir-fry.jpg',
+    photoUrl: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=800&q=80',
     cookTimeMinutes: 20,
     servings: 3,
     tags: ['lunch', 'dinner', 'healthy'],
@@ -75,7 +75,7 @@ export const SEED_RECIPES: Recipe[] = [
   {
     id: 'r-004',
     title: 'Greek Salad',
-    photoUrl: '/images/recipes/greek-salad.jpg',
+    photoUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80',
     cookTimeMinutes: 10,
     servings: 2,
     tags: ['lunch', 'healthy', 'vegetarian'],
@@ -99,7 +99,7 @@ export const SEED_RECIPES: Recipe[] = [
   {
     id: 'r-005',
     title: 'Overnight Oats',
-    photoUrl: '/images/recipes/oats.jpg',
+    photoUrl: 'https://images.unsplash.com/photo-1517673132405-a56a62b18caf?w=800&q=80',
     cookTimeMinutes: 5,
     servings: 1,
     tags: ['breakfast', 'healthy', 'vegan'],
@@ -122,7 +122,7 @@ export const SEED_RECIPES: Recipe[] = [
   {
     id: 'r-006',
     title: 'Lentil Soup',
-    photoUrl: '/images/recipes/lentil-soup.jpg',
+    photoUrl: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800&q=80',
     cookTimeMinutes: 40,
     servings: 4,
     tags: ['lunch', 'dinner', 'vegan', 'healthy'],
@@ -149,7 +149,7 @@ export const SEED_RECIPES: Recipe[] = [
   {
     id: 'r-007',
     title: 'Salmon with Roasted Vegetables',
-    photoUrl: '/images/recipes/salmon.jpg',
+    photoUrl: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=800&q=80',
     cookTimeMinutes: 35,
     servings: 2,
     tags: ['dinner', 'healthy'],
@@ -174,7 +174,7 @@ export const SEED_RECIPES: Recipe[] = [
   {
     id: 'r-008',
     title: 'Veggie Buddha Bowl',
-    photoUrl: '/images/recipes/buddha-bowl.jpg',
+    photoUrl: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=800&q=80',
     cookTimeMinutes: 30,
     servings: 2,
     tags: ['lunch', 'vegan', 'healthy'],
@@ -200,7 +200,7 @@ export const SEED_RECIPES: Recipe[] = [
   {
     id: 'r-009',
     title: 'Beef Tacos',
-    photoUrl: '/images/recipes/tacos.jpg',
+    photoUrl: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=800&q=80',
     cookTimeMinutes: 25,
     servings: 4,
     tags: ['dinner', 'lunch'],
@@ -226,7 +226,7 @@ export const SEED_RECIPES: Recipe[] = [
   {
     id: 'r-010',
     title: 'Smoothie Bowl',
-    photoUrl: '/images/recipes/smoothie-bowl.jpg',
+    photoUrl: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=800&q=80',
     cookTimeMinutes: 10,
     servings: 1,
     tags: ['breakfast', 'vegan', 'healthy'],
@@ -249,7 +249,7 @@ export const SEED_RECIPES: Recipe[] = [
   {
     id: 'r-011',
     title: 'Mushroom Risotto',
-    photoUrl: '/images/recipes/risotto.jpg',
+    photoUrl: 'https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=800&q=80',
     cookTimeMinutes: 45,
     servings: 3,
     tags: ['dinner', 'vegetarian'],
@@ -276,7 +276,7 @@ export const SEED_RECIPES: Recipe[] = [
   {
     id: 'r-012',
     title: 'Pancakes',
-    photoUrl: '/images/recipes/pancakes.jpg',
+    photoUrl: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800&q=80',
     cookTimeMinutes: 20,
     servings: 2,
     tags: ['breakfast', 'vegetarian'],
@@ -301,7 +301,7 @@ export const SEED_RECIPES: Recipe[] = [
   {
     id: 'r-013',
     title: 'Tuna Salad Sandwich',
-    photoUrl: '/images/recipes/tuna-sandwich.jpg',
+    photoUrl: 'https://images.unsplash.com/photo-1559054663-e8d23213f55c?w=800&q=80',
     cookTimeMinutes: 10,
     servings: 2,
     tags: ['lunch'],
@@ -324,7 +324,7 @@ export const SEED_RECIPES: Recipe[] = [
   {
     id: 'r-014',
     title: 'Vegetable Curry',
-    photoUrl: '/images/recipes/curry.jpg',
+    photoUrl: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&q=80',
     cookTimeMinutes: 35,
     servings: 4,
     tags: ['dinner', 'vegan', 'healthy'],
@@ -351,7 +351,7 @@ export const SEED_RECIPES: Recipe[] = [
   {
     id: 'r-015',
     title: 'Scrambled Eggs on Toast',
-    photoUrl: '/images/recipes/scrambled-eggs.jpg',
+    photoUrl: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=800&q=80',
     cookTimeMinutes: 10,
     servings: 1,
     tags: ['breakfast', 'vegetarian'],
@@ -373,7 +373,7 @@ export const SEED_RECIPES: Recipe[] = [
   {
     id: 'r-016',
     title: 'Caesar Salad with Grilled Chicken',
-    photoUrl: '/images/recipes/caesar-salad.jpg',
+    photoUrl: 'https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=800&q=80',
     cookTimeMinutes: 20,
     servings: 2,
     tags: ['lunch', 'healthy'],
@@ -395,7 +395,7 @@ export const SEED_RECIPES: Recipe[] = [
   {
     id: 'r-017',
     title: 'Tomato Soup',
-    photoUrl: '/images/recipes/tomato-soup.jpg',
+    photoUrl: 'https://images.unsplash.com/photo-1548943487-a2e4e43b4853?w=800&q=80',
     cookTimeMinutes: 30,
     servings: 3,
     tags: ['lunch', 'vegan', 'healthy'],
@@ -418,7 +418,7 @@ export const SEED_RECIPES: Recipe[] = [
   {
     id: 'r-018',
     title: 'Grilled Cheese Sandwich',
-    photoUrl: '/images/recipes/grilled-cheese.jpg',
+    photoUrl: 'https://images.unsplash.com/photo-1528736235302-52922df5c122?w=800&q=80',
     cookTimeMinutes: 10,
     servings: 1,
     tags: ['lunch', 'breakfast', 'vegetarian'],
@@ -438,7 +438,7 @@ export const SEED_RECIPES: Recipe[] = [
   {
     id: 'r-019',
     title: 'Tofu Fried Rice',
-    photoUrl: '/images/recipes/fried-rice.jpg',
+    photoUrl: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=800&q=80',
     cookTimeMinutes: 20,
     servings: 2,
     tags: ['dinner', 'vegan'],
@@ -463,7 +463,7 @@ export const SEED_RECIPES: Recipe[] = [
   {
     id: 'r-020',
     title: 'Banana Oat Muffins',
-    photoUrl: '/images/recipes/muffins.jpg',
+    photoUrl: 'https://images.unsplash.com/photo-1607958996333-41aef7caefaa?w=800&q=80',
     cookTimeMinutes: 30,
     servings: 6,
     tags: ['breakfast', 'vegan', 'healthy'],
