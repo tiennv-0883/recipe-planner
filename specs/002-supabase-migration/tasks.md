@@ -248,3 +248,9 @@ Task T090: "Fix src/app/recipes/[id]/edit/page.tsx (BUG-001)"
 - [X] BUG-005 `slots/route.ts` inserted `id: "2026-W12-monday-breakfast"` into a `uuid` column → PostgreSQL rejected the value → 500  
   — Removed `id: slotId` from the insert; UUID is now auto-generated via `gen_random_uuid()`  
   — `src/app/api/meal-plans/[week]/slots/route.ts`
+
+- [X] BUG-006 Unauthenticated users could access protected pages; logged-in users could revisit `/login`/`/signup`  
+  — Added `src/components/AuthGuard.tsx` client-side guard (watches `AuthContext` user + loading state, redirects on client-side navigation)  
+  — Wrapped root layout with `<AuthGuard>` inside `<AuthProvider>`  
+  — Hardened `middleware.ts` with try-catch so Supabase errors never silently allow unauthenticated access  
+  — Changed `router.push` → `router.replace` in login page, signup page, and `LogoutButton` so back-button cannot return to restricted pages

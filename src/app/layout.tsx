@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import AppProviders from '@/src/components/providers/AppProviders'
 import { AuthProvider } from '@/src/context/AuthContext'
+import AuthGuard from '@/src/components/AuthGuard'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -27,7 +28,9 @@ export default function RootLayout({
           Skip to main content
         </a>
         <AuthProvider>
-          <AppProviders>{children}</AppProviders>
+          <AuthGuard>
+            <AppProviders>{children}</AppProviders>
+          </AuthGuard>
         </AuthProvider>
       </body>
     </html>

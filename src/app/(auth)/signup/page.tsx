@@ -31,7 +31,7 @@ export default function SignupPage() {
     setLoading(true)
     try {
       await signup(email, password)
-      router.push('/')
+      router.replace('/')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Sign up failed. Please try again.')
     } finally {
