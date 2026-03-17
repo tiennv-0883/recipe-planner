@@ -8,10 +8,36 @@ A full-stack meal planning application built with **Next.js 15**, **TypeScript**
 
 - **Recipe Collection** — Create, edit, and delete personal recipes with ingredients and steps
 - **Meal Planner** — Assign recipes to any day-of-week × meal-type slot for the current or future weeks
+- **Multi-Recipe Meal Slots** — Assign up to 3 recipes per meal slot for flexible weekly planning
 - **Grocery List Generator** — Auto-aggregate ingredients from your meal plan; add and check off items
 - **Dashboard** — Quick overview of your week at a glance
 - **Authentication** — Email/password sign-up and login powered by Supabase Auth
 - **Cloud persistence** — All data stored per-user in Supabase PostgreSQL; access from any device
+
+---
+
+## Screenshots
+
+### Login
+![Login page](./docs/screenshots/01-login.png)
+
+### Recipe Collection
+![Recipes list](./docs/screenshots/02-recipes-list.png)
+
+### Recipe Detail
+![Recipe detail](./docs/screenshots/03-recipe-detail.png)
+
+### Create Recipe
+![Create recipe form](./docs/screenshots/04-recipe-create.png)
+
+### Meal Planner
+![Meal planner grid](./docs/screenshots/05-meal-planner.png)
+
+### Multi-Recipe Slot
+![Multi-recipe slot](./docs/screenshots/06-multi-recipe-slot.png)
+
+### Grocery List
+![Grocery list](./docs/screenshots/07-grocery-list.png)
 
 ---
 
@@ -23,6 +49,7 @@ A full-stack meal planning application built with **Next.js 15**, **TypeScript**
 | Language | TypeScript 5 (strict) |
 | Styling | Tailwind CSS v4 |
 | Backend | Supabase (PostgreSQL + Auth) |
+| Testing | Playwright (MCP + E2E) |
 | Deployment | Vercel |
 
 ---
@@ -77,6 +104,20 @@ Open [http://localhost:3000](http://localhost:3000) — you'll be redirected to 
 ### 5. Register and start planning
 
 Register a new account → 20 starter recipes are automatically seeded on first login.
+
+---
+
+## Environment Variables
+
+Copy `.env.local.example` to `.env.local` and fill in the values below. All variables are required.
+
+| Variable | Description | Example |
+|---|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL | `https://xxxx.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous (public) key | `eyJhbGci...` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server-side only) | `eyJhbGci...` |
+
+Find these values in your Supabase dashboard → **Project Settings → API**.
 
 ---
 
