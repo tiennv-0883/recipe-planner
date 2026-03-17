@@ -2,7 +2,7 @@
 
 A full-stack meal planning application built with **Next.js 15**, **TypeScript**, and **Supabase**.
 
-> **Live Demo**: *(Vercel URL will be added after deploy — see T106)*
+> **Live Demo**: https://recipe-planner-demo.vercel.app/
 
 ## Features
 
