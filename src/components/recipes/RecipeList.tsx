@@ -1,5 +1,8 @@
+'use client'
+
 import Link from 'next/link'
 import { clsx } from 'clsx'
+import { useTranslations } from 'next-intl'
 import RecipeCard from './RecipeCard'
 import type { Recipe, Tag } from '@/src/types'
 
@@ -56,6 +59,7 @@ export default function RecipeList({
   emptyMessage = 'No recipes found.',
   onClearFilters,
 }: RecipeListProps) {
+  const tTag = useTranslations('tags')
   if (recipes.length === 0) {
     return <EmptyState message={emptyMessage} onClearFilters={onClearFilters} />
   }
@@ -95,7 +99,7 @@ export default function RecipeList({
                       TAG_COLORS[tag as Tag] ?? 'bg-gray-100 text-gray-600',
                     )}
                   >
-                    {tag}
+                    {tTag(tag as Parameters<typeof tTag>[0])}
                   </span>
                 ))}
               </span>

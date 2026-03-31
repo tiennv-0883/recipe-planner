@@ -3,18 +3,19 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { clsx } from 'clsx'
+import { useTranslations } from 'next-intl'
 import LogoutButton from '@/src/components/LogoutButton'
 
 interface NavItem {
   href: string
-  label: string
+  labelKey: string
   icon: React.ReactNode
 }
 
 const NAV_ITEMS: NavItem[] = [
   {
     href: '/',
-    label: 'Dashboard',
+    labelKey: 'dashboard',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -23,7 +24,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     href: '/recipes',
-    label: 'Recipes',
+    labelKey: 'recipes',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -32,7 +33,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     href: '/meal-planner',
-    label: 'Meal Planner',
+    labelKey: 'mealPlanner',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
         <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -41,21 +42,31 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     href: '/grocery-list',
-    label: 'Grocery List',
+    labelKey: 'groceryList',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
       </svg>
     ),
   },
+  {
+    href: '/ingredient-catalog',
+    labelKey: 'ingredientCatalog',
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+      </svg>
+    ),
+  },
 ]
 
 export default function Sidebar() {
+  const t = useTranslations('nav')
   const pathname = usePathname()
 
   return (
     <aside
-      className="fixed inset-y-0 left-0 z-30 flex w-60 flex-col bg-white border-r border-gray-200"
+      className="hidden sm:flex fixed inset-y-0 left-0 z-30 w-60 flex-col bg-white border-r border-gray-200"
       aria-label="Main navigation"
     >
       {/* Logo / Brand */}
@@ -67,7 +78,7 @@ export default function Sidebar() {
             <path d="M11 8h2v8h-2z" />
           </svg>
         </span>
-        <span className="text-lg font-semibold text-gray-900">RecipePlanner</span>
+        <span className="text-lg font-semibold text-gray-900">{t('brand')}</span>
       </div>
 
       {/* Nav */}
@@ -91,7 +102,7 @@ export default function Sidebar() {
                   aria-current={isActive ? 'page' : undefined}
                 >
                   {item.icon}
-                  {item.label}
+                  {t(item.labelKey as Parameters<typeof t>[0])}
                 </Link>
               </li>
             )
@@ -101,6 +112,7 @@ export default function Sidebar() {
 
       {/* Footer */}
       <div className="border-t border-gray-200 p-4 space-y-2">
+        {/* LanguageSwitcher */}
         <LogoutButton />
         <p className="text-xs text-gray-400 text-center">Recipe Planner v1.0</p>
       </div>

@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations, useLocale } from 'next-intl'
 import { isoWeekToDateRange } from '@/src/lib/weekUtils'
 
 interface WeekNavigatorProps {
@@ -10,20 +11,22 @@ interface WeekNavigatorProps {
 }
 
 export default function WeekNavigator({ isoWeek, onPrev, onNext, onToday }: WeekNavigatorProps) {
+  const t = useTranslations('mealPlanner')
+  const locale = useLocale()
   const { start, end } = isoWeekToDateRange(isoWeek)
   const today = new Date()
   const todayTime = today.getTime()
   const isCurrentWeek = todayTime >= start.getTime() && todayTime <= end.getTime() + 86400000
 
   const formatDate = (d: Date) =>
-    d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    d.toLocaleDateString(locale, { month: 'short', day: 'numeric' })
 
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
         <button
           onClick={onPrev}
-          className="rounded-lg border border-gray-300 p-2 text-gray-600 hover:bg-gray-100 transition-colors"
+          className="rounded-lg border border-gray-300 p-3 text-gray-600 hover:bg-gray-100 transition-colors"
           aria-label="Previous week"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -40,7 +43,7 @@ export default function WeekNavigator({ isoWeek, onPrev, onNext, onToday }: Week
 
         <button
           onClick={onNext}
-          className="rounded-lg border border-gray-300 p-2 text-gray-600 hover:bg-gray-100 transition-colors"
+          className="rounded-lg border border-gray-300 p-3 text-gray-600 hover:bg-gray-100 transition-colors"
           aria-label="Next week"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -54,7 +57,7 @@ export default function WeekNavigator({ isoWeek, onPrev, onNext, onToday }: Week
           onClick={onToday}
           className="rounded-lg border border-brand-300 px-3 py-1.5 text-xs font-medium text-brand-600 hover:bg-brand-50 transition-colors"
         >
-          This week
+          {t('weekNav.thisWeek')}
         </button>
       )}
     </div>
