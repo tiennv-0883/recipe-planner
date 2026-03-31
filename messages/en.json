@@ -39,6 +39,7 @@
     "recipes": "Recipes",
     "mealPlanner": "Meal Planner",
     "groceryList": "Grocery List",
+    "ingredientCatalog": "Ingredients",
     "signOut": "Sign out",
     "brand": "Recipe Planner",
     "language": {
@@ -203,6 +204,46 @@
     "dairy_eggs": "Dairy & Eggs",
     "grains_bread": "Grains & Bread",
     "spices_seasonings": "Spices & Seasonings",
+    "other": "Other"
+  },
+  "ingredientCatalog": {
+    "title": "Ingredients",
+    "addButton": "Add ingredient",
+    "empty": {
+      "title": "No ingredients yet",
+      "cta": "Add your first ingredient"
+    },
+    "noResults": "No ingredients found",
+    "clearFilter": "Clear filter",
+    "search": {
+      "placeholder": "Search by name..."
+    },
+    "form": {
+      "titleAdd": "Add ingredient",
+      "titleEdit": "Edit ingredient",
+      "name": "Ingredient name",
+      "namePlaceholder": "e.g. Squid",
+      "nameRequired": "Please enter an ingredient name",
+      "price": "Price (VNĐ)",
+      "unit": "Unit",
+      "unitPlaceholder": "e.g. kg, litre, piece",
+      "storeName": "Store",
+      "storeNamePlaceholder": "e.g. Ben Thanh Market",
+      "storeType": "Type",
+      "sellerPhone": "Seller phone",
+      "notes": "Notes",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "deleteConfirm": "Are you sure you want to delete this ingredient?",
+    "priceNotSet": "Price not set"
+  },
+  "storeTypes": {
+    "all": "All types",
+    "fresh": "Fresh",
+    "frozen": "Frozen",
+    "dry": "Dry",
+    "canned": "Canned",
     "other": "Other"
   },
   "notFound": {

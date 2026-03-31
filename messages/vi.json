@@ -39,6 +39,7 @@
     "recipes": "Công thức",
     "mealPlanner": "Kế hoạch bữa ăn",
     "groceryList": "Danh sách mua sắm",
+    "ingredientCatalog": "Nguyên liệu",
     "signOut": "Đăng xuất",
     "brand": "Recipe Planner",
     "language": {
@@ -203,6 +204,46 @@
     "dairy_eggs": "Sữa & trứng",
     "grains_bread": "Ngũ cốc & bánh mì",
     "spices_seasonings": "Gia vị",
+    "other": "Khác"
+  },
+  "ingredientCatalog": {
+    "title": "Nguyên liệu",
+    "addButton": "Thêm nguyên liệu",
+    "empty": {
+      "title": "Chưa có nguyên liệu nào",
+      "cta": "Thêm nguyên liệu đầu tiên"
+    },
+    "noResults": "Không tìm thấy nguyên liệu phù hợp",
+    "clearFilter": "Xóa bộ lọc",
+    "search": {
+      "placeholder": "Tìm theo tên..."
+    },
+    "form": {
+      "titleAdd": "Thêm nguyên liệu",
+      "titleEdit": "Sửa nguyên liệu",
+      "name": "Tên nguyên liệu",
+      "namePlaceholder": "VD: Mực tươi",
+      "nameRequired": "Vui lòng nhập tên nguyên liệu",
+      "price": "Giá (VNĐ)",
+      "unit": "Đơn vị",
+      "unitPlaceholder": "VD: kg, lít, cái",
+      "storeName": "Nơi mua",
+      "storeNamePlaceholder": "VD: Chợ Bến Thành",
+      "storeType": "Loại hàng",
+      "sellerPhone": "SĐT người bán",
+      "notes": "Ghi chú",
+      "save": "Lưu",
+      "cancel": "Hủy"
+    },
+    "deleteConfirm": "Bạn có chắc muốn xóa nguyên liệu này?",
+    "priceNotSet": "Chưa có giá"
+  },
+  "storeTypes": {
+    "all": "Tất cả",
+    "fresh": "Tươi sống",
+    "frozen": "Đông lạnh",
+    "dry": "Khô",
+    "canned": "Đóng hộp",
     "other": "Khác"
   },
   "notFound": {

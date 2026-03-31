@@ -94,6 +94,26 @@ export interface GroceryList {
 }
 
 // ─────────────────────────────────────────────────
+//  Ingredient Catalog
+// ─────────────────────────────────────────────────
+
+export type StoreType = 'fresh' | 'frozen' | 'dry' | 'canned' | 'other'
+
+export interface CatalogEntry {
+  id: string
+  userId: string
+  name: string
+  price?: number
+  unit?: string
+  storeName?: string
+  storeType?: StoreType
+  sellerPhone?: string
+  notes?: string
+  createdAt: string
+  updatedAt: string
+}
+
+// ─────────────────────────────────────────────────
 //  Validation error types
 // ─────────────────────────────────────────────────
 

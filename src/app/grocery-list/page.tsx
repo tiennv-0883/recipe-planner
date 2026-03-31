@@ -6,6 +6,7 @@ import GroceryCategory from '@/src/components/grocery/GroceryCategory'
 import AddManualItemForm from '@/src/components/grocery/AddManualItemForm'
 import WeekNavigator from '@/src/components/meal-planner/WeekNavigator'
 import { useGrocery } from '@/src/context/GroceryContext'
+import { useCatalog } from '@/src/context/CatalogContext'
 import { relativeIsoWeek, currentIsoWeek } from '@/src/lib/weekUtils'
 import { groupByCategory, uncheckedCount } from '@/src/services/groceryList'
 import type { FoodCategory } from '@/src/types'
@@ -13,6 +14,7 @@ import type { FoodCategory } from '@/src/types'
 export default function GroceryListPage() {
   const t = useTranslations('groceryList')
   const { state: groceryState, apiDispatch: groceryApiDispatch, activeList } = useGrocery()
+  const { state: catalogState } = useCatalog()
 
   function handleGenerate() {
     // Calls POST /api/grocery-lists/[week]/generate → saves to Supabase
@@ -145,6 +147,7 @@ export default function GroceryListPage() {
               items={items}
               onToggle={handleToggle}
               onRemove={handleRemove}
+              catalogEntries={catalogState.entries}
             />
           ))
         )}

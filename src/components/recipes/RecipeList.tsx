@@ -59,6 +59,7 @@ export default function RecipeList({
   emptyMessage = 'No recipes found.',
   onClearFilters,
 }: RecipeListProps) {
+  const tTag = useTranslations('tags')
   if (recipes.length === 0) {
     return <EmptyState message={emptyMessage} onClearFilters={onClearFilters} />
   }
